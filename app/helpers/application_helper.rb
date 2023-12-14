@@ -50,23 +50,6 @@ module ApplicationHelper
     Time.zone&.tzinfo&.name || 'UTC'
   end
 
-  def current_hosts_path(*args)
-    ApplicationHelper.current_hosts_path(*args)
-  end
-
-  def self.current_hosts_path(*args)
-    @url_helpers ||= Rails.application.routes.url_helpers
-    if Setting[:new_hosts_page]
-      @url_helpers.new_hosts_index_page_path(*args)
-    else
-      @url_helpers.hosts_path(*args)
-    end
-  end
-
-  def current_host_details_path(host)
-    Setting['host_details_ui'] ? host_details_page_path(host) : host_path(host)
-  end
-
   protected
 
   def generate_date_id
@@ -322,8 +305,8 @@ module ApplicationHelper
     editable(object, property, {:type => type, :title => title, :value => value, :class => klass, :source => select_values, :url => update_url, :placeholder => placeholder}.compact)
   end
 
-  def documentation_url(section = nil, type: 'manual', **options)
-    main_app.external_link_url(type: type, section: section, params: options)
+  def documentation_url(section = "", options = {})
+    main_app.external_link_url(options.merge(type: 'manual', params: { section: section }))
   end
 
   def spinner(text = '', options = {})
@@ -432,7 +415,10 @@ module ApplicationHelper
       labFeatures: Setting[:lab_features],
       safeMode: Setting[:safemode_render],
       displayFqdnForHosts: Setting[:display_fqdn_for_hosts],
-      displayNewHostsPage: Setting[:new_hosts_page],
     }
+  end
+
+  def current_host_details_path(host)
+    Setting['host_details_ui'] ? host_details_page_path(host) : host_path(host)
   end
 end

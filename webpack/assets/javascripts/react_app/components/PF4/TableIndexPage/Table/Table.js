@@ -9,7 +9,6 @@ import {
   Td,
   ActionsColumn,
 } from '@patternfly/react-table';
-import { noop } from '../../../../common/helpers';
 import { translate as __ } from '../../../../common/I18n';
 import { useTableSort } from '../../Helpers/useTableSort';
 import Pagination from '../../../Pagination';
@@ -29,8 +28,6 @@ export const Table = ({
   url,
   isPending,
   isEmbedded,
-  showCheckboxes,
-  rowSelectTd,
 }) => {
   const columnsToSortParams = {};
   Object.keys(columns).forEach(key => {
@@ -69,10 +66,9 @@ export const Table = ({
         onClick: () => onDeleteClick({ id, name }),
         isDisabled: !canDelete,
       },
-      ...((getActions && getActions({ id, name, canDelete, ...item })) ?? []),
+      getActions && getActions({ id, name, ...item }),
     ].filter(Boolean);
   const columnNamesKeys = Object.keys(columns);
-  const RowSelectTd = rowSelectTd;
   return (
     <>
       <DeleteModal
@@ -82,10 +78,9 @@ export const Table = ({
         url={url}
         refreshData={refreshData}
       />
-      <TableComposable variant="compact" ouiaId="table" isStriped>
+      <TableComposable variant="compact" ouiaId="table">
         <Thead>
           <Tr ouiaId="table-header">
-            {showCheckboxes && <Th key="checkbox-th" />}
             {columnNamesKeys.map(k => (
               <Th
                 key={k}
@@ -105,7 +100,7 @@ export const Table = ({
               <Td colSpan={100}>
                 <EmptyPage
                   message={{
-                    type: 'loading',
+                    type: 'empty',
                     text: __('Loading...'),
                   }}
                 />
@@ -127,8 +122,7 @@ export const Table = ({
             </Tr>
           )}
           {results.map((result, rowIndex) => (
-            <Tr key={rowIndex} ouiaId={`table-row-${rowIndex}`} isHoverable>
-              {showCheckboxes && <RowSelectTd rowData={result} />}
+            <Tr key={rowIndex} ouiaId={`table-row-${rowIndex}`}>
               {columnNamesKeys.map(k => (
                 <Td key={k} dataLabel={columnNames[k]}>
                   {columns[k].wrapper ? columns[k].wrapper(result) : result[k]}
@@ -171,8 +165,6 @@ Table.propTypes = {
   url: PropTypes.string.isRequired,
   isPending: PropTypes.bool.isRequired,
   isEmbedded: PropTypes.bool,
-  rowSelectTd: PropTypes.func,
-  showCheckboxes: PropTypes.bool,
 };
 
 Table.defaultProps = {
@@ -182,6 +174,4 @@ Table.defaultProps = {
   getActions: null,
   results: [],
   isEmbedded: false,
-  rowSelectTd: noop,
-  showCheckboxes: false,
 };

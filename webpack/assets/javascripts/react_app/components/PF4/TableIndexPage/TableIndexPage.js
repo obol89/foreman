@@ -1,9 +1,9 @@
-/* eslint-disable max-lines */
 import React, { useState, useMemo } from 'react';
 import PropTypes from 'prop-types';
 import { QuestionCircleIcon } from '@patternfly/react-icons';
 import { useHistory } from 'react-router-dom';
 import URI from 'urijs';
+
 import {
   Spinner,
   Toolbar,
@@ -14,19 +14,16 @@ import {
   PageSectionVariants,
   TextContent,
   Text,
-  PaginationVariant,
 } from '@patternfly/react-core';
-
 import {
   createURL,
   exportURL,
   helpURL,
   getURIsearch,
 } from '../../../common/urlHelpers';
-import { useAPI } from '../../../common/hooks/API/APIHooks';
 import { translate as __ } from '../../../common/I18n';
-import { noop } from '../../../common/helpers';
-import Pagination from '../../Pagination';
+
+import { useAPI } from '../../../common/hooks/API/APIHooks';
 import { getControllerSearchProps, STATUS } from '../../../constants';
 import BreadcrumbBar from '../../BreadcrumbBar';
 import SearchBar from '../../SearchBar';
@@ -34,6 +31,7 @@ import Head from '../../Head';
 import { ActionButtons } from './ActionButtons';
 import './TableIndexPage.scss';
 import { Table } from './Table/Table';
+
 /**
 
 A page component that displays a table with data fetched from an API. It provides search and filtering functionality, and the ability to create new entries and export data.
@@ -52,11 +50,10 @@ A page component that displays a table with data fetched from an API. It provide
 @param {string} {customExportURL} - a custom URL for the export button
 @param {string} {customHelpURL} - a custom URL for the documentation button
 @param {Object} {customSearchProps} custom search props to send to the search bar
-@param {Array<Object>} {customToolbarItems} - an array of custom toolbar items to be displayed
+@param {Array<Object>} {cutsomToolbarItems} - an array of custom toolbar items to be displayed
 @param {boolean} {exportable} - whether or not to show export button
 @param {boolean} {hasHelpPage} - whether or not to show documentation button
-@param {string}{headerText} - the header text for the page
-@param {string}{header} - header node; default is <title>{headerText}</title>
+@param {string}{header} - the header text for the page
 @param {boolean} {isDeleteable} - whether or not entries can be deleted
 @param {boolean} {searchable} - whether or not the table can be searched
 @param {React.ReactNode} {children} - optional children to be rendered inside the page instead of the table
@@ -75,20 +72,13 @@ const TableIndexPage = ({
   customExportURL,
   customHelpURL,
   customSearchProps,
-  customToolbarItems,
+  cutsomToolbarItems,
   exportable,
   hasHelpPage,
-  headerText,
   header,
   isDeleteable,
   searchable,
   children,
-  selectionToolbar,
-  replacementResponse,
-  showCheckboxes,
-  rowSelectTd,
-  rowKebabItems,
-  updateSearchQuery,
 }) => {
   const history = useHistory();
   const { location: { search: historySearch } = {} } = history || {};
@@ -105,8 +95,18 @@ const TableIndexPage = ({
     defaultParams.per_page = parseInt(urlPerPage, 10);
   }
   const [params, setParams] = useState(defaultParams);
-  let response = useAPI(
-    replacementResponse ? null : 'get',
+  const {
+    response: {
+      search: apiSearchQuery,
+      can_create: canCreate,
+      results,
+      subtotal,
+      message: errorMessage,
+    },
+    status = STATUS.PENDING,
+    setAPIOptions,
+  } = useAPI(
+    'get',
     apiUrl.includes('include_permissions')
       ? apiUrl
       : `${apiUrl}?include_permissions=true`,
@@ -115,29 +115,6 @@ const TableIndexPage = ({
       params: defaultParams,
     }
   );
-
-  if (replacementResponse) {
-    response = replacementResponse;
-  }
-
-  const {
-    response: {
-      search: apiSearchQuery,
-      can_create: canCreate,
-      results,
-      total,
-      per_page: perPage,
-      page,
-      subtotal,
-      message: errorMessage,
-    },
-    status = STATUS.PENDING,
-    setAPIOptions,
-  } = response;
-
-  const onPagination = newPagination => {
-    setParamsAndAPI({ ...params, ...newPagination });
-  };
 
   const memoDefaultSearchProps = useMemo(
     () => getControllerSearchProps(controller),
@@ -157,7 +134,6 @@ const TableIndexPage = ({
   const setSearch = newSearch => {
     const uri = new URI();
     uri.setSearch(newSearch);
-    updateSearchQuery(newSearch.search);
     history.push({ search: uri.search() });
     setParamsAndAPI({ ...params, ...newSearch });
   };
@@ -190,32 +166,27 @@ const TableIndexPage = ({
 
   return (
     <div id="foreman-page">
-      <Head>{headerText}</Head>
+      <Head>
+        <title>{header}</title>
+      </Head>
       {breadcrumbOptions && (
         <PageSection variant={PageSectionVariants.light} type="breadcrumb">
           <BreadcrumbBar {...breadcrumbOptions} />
         </PageSection>
       )}
-      <PageSection
-        variant={PageSectionVariants.light}
-        className="table-title-section"
-      >
+      <PageSection variant={PageSectionVariants.light}>
         <TextContent>
           <Text ouiaId="header-text" component="h1">
-            {header ?? <title>{headerText}</title>}
+            {header}
           </Text>
         </TextContent>
       </PageSection>
       {beforeToolbarComponent}
-      <PageSection
-        variant={PageSectionVariants.light}
-        className="table-toolbar-section"
-      >
+      <PageSection variant={PageSectionVariants.light}>
         <Toolbar ouiaId="table-toolbar" className="table-toolbar">
           <ToolbarContent>
             {searchable && (
               <ToolbarGroup>
-                {selectionToolbar}
                 <ToolbarItem className="toolbar-search">
                   <SearchBar
                     data={searchProps}
@@ -231,41 +202,23 @@ const TableIndexPage = ({
               </ToolbarGroup>
             )}
             {actionButtons.length > 0 && (
-              <ToolbarGroup
-                alignment={{ default: 'alignLeft' }}
-                className="table-toolbar-actions"
-              >
+              <ToolbarGroup alignment={{ default: 'alignRight' }}>
                 <ToolbarItem>
                   <ActionButtons buttons={actionButtons} />
                 </ToolbarItem>
               </ToolbarGroup>
             )}
-
-            {customToolbarItems && (
-              <ToolbarGroup>{customToolbarItems}</ToolbarGroup>
-            )}
-
-            {total > 0 && (
-              <Pagination
-                variant={PaginationVariant.top}
-                page={page}
-                perPage={perPage}
-                itemCount={subtotal}
-                onChange={onPagination}
-              />
+            {cutsomToolbarItems && (
+              <ToolbarGroup>{cutsomToolbarItems}</ToolbarGroup>
             )}
           </ToolbarContent>
         </Toolbar>
       </PageSection>
-      <PageSection
-        variant={PageSectionVariants.light}
-        className="table-section"
-      >
+      <PageSection variant={PageSectionVariants.light}>
         {children || (
           <Table
             params={params}
             setParams={setParamsAndAPI}
-            getActions={rowKebabItems}
             itemCount={subtotal}
             results={results}
             url={apiUrl}
@@ -281,8 +234,6 @@ const TableIndexPage = ({
               status === STATUS.ERROR && errorMessage ? errorMessage : null
             }
             isPending={status === STATUS.PENDING}
-            showCheckboxes={showCheckboxes}
-            rowSelectTd={rowSelectTd}
           />
         )}
       </PageSection>
@@ -326,20 +277,13 @@ TableIndexPage.propTypes = {
   customExportURL: PropTypes.string,
   customHelpURL: PropTypes.string,
   customSearchProps: PropTypes.object,
-  customToolbarItems: PropTypes.node,
-  replacementResponse: PropTypes.object,
+  cutsomToolbarItems: PropTypes.node,
   exportable: PropTypes.bool,
   hasHelpPage: PropTypes.bool,
-  headerText: PropTypes.string,
-  header: PropTypes.node,
+  header: PropTypes.string,
   isDeleteable: PropTypes.bool,
   searchable: PropTypes.bool,
   children: PropTypes.node,
-  selectionToolbar: PropTypes.node,
-  rowSelectTd: PropTypes.func,
-  showCheckboxes: PropTypes.bool,
-  rowKebabItems: PropTypes.func,
-  updateSearchQuery: PropTypes.func,
 };
 
 TableIndexPage.defaultProps = {
@@ -355,19 +299,12 @@ TableIndexPage.defaultProps = {
   customExportURL: '',
   customHelpURL: '',
   customSearchProps: null,
-  customToolbarItems: null,
+  cutsomToolbarItems: null,
   exportable: false,
   hasHelpPage: false,
-  headerText: '',
-  header: undefined,
+  header: '',
   isDeleteable: false,
   searchable: true,
-  selectionToolbar: null,
-  rowSelectTd: noop,
-  showCheckboxes: false,
-  replacementResponse: null,
-  rowKebabItems: noop,
-  updateSearchQuery: noop,
 };
 
 export default TableIndexPage;

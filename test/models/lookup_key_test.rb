@@ -220,7 +220,7 @@ class LookupKeyTest < ActiveSupport::TestCase
       },
       {
         :sc_type => 'yaml',
-        :value => '@@',
+        :value => '{a:test}',
       },
       {
         :sc_type => 'json',

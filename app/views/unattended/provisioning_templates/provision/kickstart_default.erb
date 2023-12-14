@@ -33,7 +33,6 @@ description: |
   - enable-puppetlabs-puppet5-repo: boolean (default=false)
   - enable-puppetlabs-puppet6-repo: boolean (default=false)
   - enable-official-puppet7-repo: boolean (default=false)
-  - enable-official-puppet8-repo: boolean (default=false)
   - skip-puppet-setup: boolean (default=false)
   - salt_master: string (default=undef)
   - ntp-server: string (default=undef)
@@ -337,7 +336,7 @@ chmod +x /root/remote_execution_pull_setup.sh
 <% end -%>
 
 <% if puppet_enabled %>
-<% if host_param_true?('enable-puppetlabs-repo') || host_param_true?('enable-official-puppet8-repo') || host_param_true?('enable-official-puppet7-repo') || host_param_true?('enable-puppetlabs-puppet6-repo')|| host_param_true?('enable-puppetlabs-puppet5-repo') -%>
+<% if host_param_true?('enable-puppetlabs-repo') || host_param_true?('enable-official-puppet7-repo') || host_param_true?('enable-puppetlabs-puppet6-repo')|| host_param_true?('enable-puppetlabs-puppet5-repo') -%>
 <%= snippet 'puppetlabs_repo' %>
 <% end -%>
 <%= snippet 'puppet_setup' %>
@@ -363,11 +362,7 @@ sed -e 's/DEFAULTKERNEL=kernel-uek/DEFAULTKERNEL=kernel/g' -i /etc/sysconfig/ker
 
 touch /tmp/foreman_built
 
-<% if host_param_true?('use_graphical_installer') -%>
-chvt 6
-<% else -%>
 chvt 1
-<% end -%>
 ) 2>&1 | tee /root/install.post.log
 <%= section_end %>
 

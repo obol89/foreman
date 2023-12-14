@@ -19,13 +19,14 @@ ApipieDSL.configure do |config|
   config.default_locale = FastGettext.default_locale
   config.locale = ->(loc) { loc ? FastGettext.set_locale(loc) : FastGettext.locale }
 
-  config.translate = ->(str, loc) { str ? FastGettext.with_locale(loc) { _(str) } : nil }
-  config.help_layout = 'apipie_dsl/apipie_dsls/help.html.erb'
-  config.default_class_description = lambda do |model|
-    return nil unless model.respond_to?(:model_name)
-    _("A class representing %s object") % model.model_name.human
+  config.translate = lambda do |str, loc|
+    old_loc = FastGettext.locale
+    FastGettext.set_locale(loc)
+    trans = _(str) if str
+    FastGettext.set_locale(old_loc)
+    trans
   end
-  config.reload_dsl = false
+  config.help_layout = 'apipie_dsl/apipie_dsls/help.html.erb'
 end
 
 Apipie.configure do |config|
@@ -65,9 +66,14 @@ Rails.application.config.after_initialize do
     }
 
     config.translate = lambda do |str, loc|
+      old_loc = FastGettext.locale
+      FastGettext.set_locale(loc)
       if str
-        FastGettext.with_locale(loc) { _(str) % substitutions.transform_values { |v| v.respond_to?(:call) ? v.call : v } }
+        trans = _(str)
+        trans = trans % Hash[substitutions.map { |k, v| [k, v.respond_to?(:call) ? v.call : v] }]
       end
+      FastGettext.set_locale(old_loc)
+      trans
     end
   end
 end

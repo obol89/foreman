@@ -56,7 +56,7 @@ else
       end
     end
     Bundler.require(*Rails.groups)
-    optional_bundler_groups = %w[assets ec2 fog libvirt openstack ovirt vmware redis]
+    optional_bundler_groups = %w[assets ec2 fog libvirt openstack ovirt vmware]
     optional_bundler_groups.each do |group|
       Bundler.require(group)
     rescue LoadError
@@ -315,7 +315,7 @@ module Foreman
       config.cache_store = options
       Foreman::Logging.logger('app').info "Rails cache backend: Redis"
     else
-      config.cache_store = :file_store, Rails.root.join('tmp', 'cache/')
+      config.cache_store = :file_store, Rails.root.join('tmp', 'cache')
       Foreman::Logging.logger('app').info "Rails cache backend: File"
     end
 

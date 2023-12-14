@@ -15,14 +15,6 @@ const subItemsA = [
     href: '/c',
     id: 'menu_item_cc',
   },
-
-  {
-    title: 'Ac',
-    isDivider: false,
-    onClick: mockOnClick,
-    href: '/ac',
-    id: 'menu_item_ac',
-  },
 ];
 const subItemsB = [
   {
@@ -34,7 +26,7 @@ const subItemsB = [
   },
 ];
 
-export const PFitems = [
+const PFitems = [
   {
     title: 'Monitor',
     initialActive: true,
@@ -48,6 +40,31 @@ export const PFitems = [
     subItems: subItemsB,
   },
 ];
+// Server Hash Data
+const monitorChildren = [
+  {
+    type: 'item',
+    name: 'Dashboard',
+    title: 'Dashboard',
+    exact: true,
+    url: '/',
+  },
+  {
+    type: 'item',
+    name: 'Facts',
+    title: 'Facts',
+    url: '/fact_values',
+  },
+];
+
+const hostsChildren = [
+  {
+    type: 'item',
+    name: 'All Hosts',
+    title: 'All Hosts',
+    url: '/hosts/new',
+  },
+];
 
 const namelessChildren = [
   {
@@ -56,6 +73,21 @@ const namelessChildren = [
   },
   {
     type: 'divider',
+  },
+];
+
+const hashItemsA = [
+  {
+    type: 'sub_menu',
+    name: 'Monitor',
+    icon: 'fa fa-tachometer',
+    children: monitorChildren,
+  },
+  {
+    type: 'sub_menu',
+    name: 'Hosts',
+    icon: 'fa fa-server',
+    children: hostsChildren,
   },
 ];
 

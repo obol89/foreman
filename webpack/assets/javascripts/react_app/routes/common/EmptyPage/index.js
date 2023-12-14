@@ -4,25 +4,17 @@ import { translate as __ } from '../../../common/I18n';
 import DefaultEmptyState from '../../../components/common/EmptyState';
 import './emptypage.scss';
 
-const EmptyPage = ({ message: { type, text } }) => {
-  const headerTextMap = {
-    empty: __('No Results'),
-    error: __('Error'),
-    loading: __('Loading'),
-  };
-  const headerText = headerTextMap[type];
-  return (
-    <DefaultEmptyState
-      icon={type === 'error' ? 'error-circle-o' : 'add-circle-o'}
-      header={headerText}
-      description={text}
-    />
-  );
-};
+const EmptyPage = ({ message: { type, text } }) => (
+  <DefaultEmptyState
+    icon={type === 'error' ? 'error-circle-o' : 'add-circle-o'}
+    header={type === 'error' ? __('Error') : __('No Results')}
+    description={text}
+  />
+);
 
 EmptyPage.propTypes = {
   message: PropTypes.shape({
-    type: PropTypes.oneOf(['empty', 'error', 'loading']),
+    type: PropTypes.oneOf(['empty', 'error']),
     text: PropTypes.string,
   }),
 };

@@ -1,7 +1,6 @@
 module SSO
   class Jwt < Base
     attr_reader :current_user
-    attr_reader :failed_auth_message
 
     def available?
       controller.api_request? && bearer_token_set? && no_issuer?
@@ -20,12 +19,10 @@ module SSO
       @current_user = user
       user&.login
     rescue JWT::ExpiredSignature
-      @failed_auth_message = N_("JWT SSO: Expired JWT token.")
-      Rails.logger.warn @failed_auth_message
+      Rails.logger.warn "JWT SSO: Expired JWT token."
       nil
     rescue JWT::DecodeError
-      @failed_auth_message = N_("JWT SSO: Failed to decode JWT.")
-      Rails.logger.warn @failed_auth_message
+      Rails.logger.warn "JWT SSO: Failed to decode JWT."
       nil
     end
 

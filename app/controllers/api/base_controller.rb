@@ -199,8 +199,7 @@ module Api
 
       unless authenticate
         count_login_failure
-        message = @available_sso.try(:failed_auth_message)
-        render_error('unauthorized', status: :unauthorized, locals: { user_login: @available_sso.try(:user), message: message ? _(message) : ''})
+        render_error('unauthorized', :status => :unauthorized, :locals => { :user_login => @available_sso.try(:user) })
         return false
       end
 
@@ -388,7 +387,7 @@ module Api
         'create'
       when 'edit', 'update'
         'edit'
-      when 'destroy', 'bulk_destroy'
+      when 'destroy'
         'destroy'
       when 'index', 'show', 'status'
         'view'

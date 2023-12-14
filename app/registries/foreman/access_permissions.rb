@@ -18,7 +18,6 @@ Foreman::AccessControl.map do |permission_set|
       :bookmarks => [:index, :show, :auto_complete_search, :welcome],
       :"api/v2/bookmarks" => [:index, :show],
     }, :public => true
-    map.permission :current_permissions, { :"api/v2/permissions" => [:current_permissions] }, :public => true
   end
 
   permission_set.security_block :architectures do |map|
@@ -276,7 +275,6 @@ Foreman::AccessControl.map do |permission_set|
                                   }
     map.permission :destroy_hosts, {:hosts => [:destroy, :multiple_actions, :reset_multiple, :multiple_destroy, :submit_multiple_destroy],
                                     :"api/v2/hosts" => [:destroy],
-                                    :"api/v2/hosts_bulk_actions" => [:bulk_destroy],
                                     :"api/v2/interfaces" => [:destroy],
                                   }
     map.permission :build_hosts,   {:hosts => [:setBuild, :cancelBuild, :multiple_build, :submit_multiple_build, :review_before_build,

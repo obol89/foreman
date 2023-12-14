@@ -36,10 +36,6 @@ class HostStatusPresenter
     end
   end
 
-  def current_hosts_path(*args)
-    ApplicationHelper.current_hosts_path(*args)
-  end
-
   [:ok, :warn, :error].each do |status_name|
     define_method :"#{status_name}_total_query" do
       query = total_queries.select { |k, v| send("#{status_name}_statuses").include?(k) }.values.compact.join(' OR ')
@@ -59,14 +55,14 @@ class HostStatusPresenter
       query = send("#{status_name}_total_query")
       return if query.empty?
 
-      current_hosts_path(search: query)
+      Rails.application.routes.url_helpers.hosts_path(search: query)
     end
 
     define_method :"#{status_name}_owned_path" do
       query = send("#{status_name}_owned_query")
       return if query.empty?
 
-      current_hosts_path(search: query)
+      Rails.application.routes.url_helpers.hosts_path(search: query)
     end
   end
 
@@ -91,13 +87,13 @@ class HostStatusPresenter
 
   def total_paths
     total_queries.transform_values do |query|
-      current_hosts_path(search: query)
+      Rails.application.routes.url_helpers.hosts_path(search: query)
     end
   end
 
   def owned_paths
     owned_queries.transform_values do |query|
-      current_hosts_path(search: query)
+      Rails.application.routes.url_helpers.hosts_path(search: query)
     end
   end
 

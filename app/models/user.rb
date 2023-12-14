@@ -149,7 +149,7 @@ class User < ApplicationRecord
 
   set_crud_hooks :user
 
-  apipie :class do
+  apipie :class, desc: "A class representing #{model_name.human} object" do
     sections only: %w[all additional]
     property :id, Integer, desc: 'Numerical ID of the User'
     property :firstname, String, desc: 'Returns the user first name'

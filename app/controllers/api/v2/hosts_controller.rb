@@ -2,7 +2,6 @@ module Api
   module V2
     class HostsController < V2::BaseController
       include Api::Version2
-      include Api::V2::BulkHostsExtension
       include ScopesPerAction
       include Foreman::Controller::SmartProxyAuth
       include Foreman::Controller::Parameters::Host

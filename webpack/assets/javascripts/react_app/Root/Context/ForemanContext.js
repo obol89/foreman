@@ -13,8 +13,3 @@ export const useForemanDocUrl = () => useForemanMetadata().docUrl;
 export const useForemanOrganization = () => useForemanMetadata().organization;
 export const useForemanLocation = () => useForemanMetadata().location;
 export const useForemanUser = () => useForemanMetadata().user;
-
-export const useForemanHostsPageUrl = () => {
-  const { displayNewHostsPage } = useForemanSettings();
-  return displayNewHostsPage ? '/new/hosts' : '/hosts';
-};

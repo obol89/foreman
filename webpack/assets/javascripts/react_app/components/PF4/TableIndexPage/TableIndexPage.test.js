@@ -37,17 +37,6 @@ const props = {
   exportable: true,
   creatable: true,
   hasHelpPage: true,
-  response: {
-    response: {
-      search: "",
-      can_create: true,
-      results: [{item: 1}],
-      total: 1,
-      per_page: 20,
-      page: 1,
-      subtotal: 1,
-    },
-  },
   children: <div>Content</div>,
   customActionButtons: [
     {
@@ -55,7 +44,7 @@ const props = {
       action: { href: '/custom' },
     },
   ],
-  customToolbarItems: <button>Custom button</button>,
+  cutsomToolbarItems: <button>Custom button</button>,
 };
 Object.defineProperty(window, 'location', {
   value: { href: '/test?search=name=test' },

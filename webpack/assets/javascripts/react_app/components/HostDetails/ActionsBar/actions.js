@@ -14,7 +14,8 @@ export const deleteHost = (
   compute,
   destroyVmOnHostDelete
 ) => dispatch => {
-  const successToast = () => sprintf(__('Host %s deleted'), hostName);
+  const successToast = () =>
+    sprintf(__('Host %s has been removed successfully'), hostName);
   const errorToast = ({ message }) => message;
   const url = foremanUrl(`/api/hosts/${hostName}`);
 
@@ -36,7 +37,7 @@ export const deleteHost = (
     openConfirmModal({
       isWarning: true,
       title: __('Delete host?'),
-      confirmButtonText: __('Delete'),
+      confirmButtonText: __('Delete host'),
       onConfirm: () =>
         dispatch(
           APIActions.delete({

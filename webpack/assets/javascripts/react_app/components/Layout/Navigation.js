@@ -9,7 +9,6 @@ import {
   NavItemSeparator,
 } from '@patternfly/react-core';
 import { getCurrentPath } from './LayoutHelper';
-import { NavigationSearch } from './NavigationSearch';
 
 const titleWithIcon = (title, iconClass) => (
   <div>
@@ -46,7 +45,7 @@ const Navigation = ({
 
   items.forEach(item => {
     item.subItems.forEach(subItem => {
-      if (!subItem.isDivider && subItem.href) {
+      if (!subItem.isDivider) {
         // don't keep the query parameters for the key
         subItemToItemMap[pathFragment(subItem.href)] = item.title;
       }
@@ -71,7 +70,7 @@ const Navigation = ({
             } else {
               groups[currIndex].groupItems.push({
                 ...sub,
-                isActive: currentPath === sub.href?.split('?')[0],
+                isActive: currentPath === sub.href.split('?')[0],
               });
             }
           });
@@ -81,8 +80,6 @@ const Navigation = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [items.length, currentPath]
   );
-
-  if (!items.length) return null;
 
   const clickAndNavigate = (_onClick, href, event) => {
     if (event.ctrlKey) return;
@@ -98,7 +95,6 @@ const Navigation = ({
   return (
     <Nav id="foreman-nav" ouiaId="foreman-nav">
       <NavList>
-        <NavigationSearch clickAndNavigate={clickAndNavigate} items={items} />
         {groupedItems.map(({ title, iconClass, groups, className }, index) => (
           <React.Fragment key={index}>
             <NavExpandable
